@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os
 
+import boto3
 from dotenv import load_dotenv
 import instructor
 from langfuse.openai import OpenAI
@@ -15,7 +16,12 @@ load_dotenv()
 openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 instructor_openai_client = instructor.from_openai(openai_client)
 
-
+if not os.path.exists("polmaraton_slawekr_model_lr.pkl"):
+    s3 = boto3.client("s3")
+    s3.download_file(
+        "halfmarathon-slawekr", 
+        "models/polmaraton_slawekr_model_lr.pkl", 
+        "polmaraton_slawekr_model_lr.pkl")
 class Runner(BaseModel):
     age: int = -1
     gender: str = ""
