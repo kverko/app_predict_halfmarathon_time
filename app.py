@@ -1,5 +1,6 @@
 from datetime import timedelta
 import os
+import time
 
 import boto3
 from dotenv import load_dotenv
@@ -66,9 +67,9 @@ st.session_state.setdefault("run_time_5km", -1)
 st.session_state.setdefault("time_units", "")
 
 info = st.text_area(
-    label="I need some info to make the prediction",
-    placeholder="please tell me your age, gender "
-                "and how long it takes you to run 5km distance",
+    label="I need some info to make the prediction. "
+            "Please tell me your age, gender "
+            "and how long it takes you to run 5km distance.",
     value=st.session_state["info"]
 )
 missing_data = ""
@@ -108,12 +109,32 @@ if st.button("send") and info:
         prediction = predict_model(model, data=data_df)
         predicted_time_s = prediction['prediction_label'][0]
         pred_time_hhmmss = str(timedelta(seconds=predicted_time_s)).split(':')
+        p_hh = int(pred_time_hhmmss[0] or 0)
+        p_mm = int(pred_time_hhmmss[1] or 0)
+        p_ss = int(round(float(pred_time_hhmmss[2] or 0.0)))
 
-        p_hh = pred_time_hhmmss[0]
-        p_mm = pred_time_hhmmss[1]
-        p_ss = pred_time_hhmmss[2]
-
-        st.write(f"Your predicted halfmarathon time is: **{p_hh}:{p_mm}:{p_ss}.**")
+        st.write(f"Your predicted halfmarathon time is: ")
+        with st.spinner("..."):
+            time.sleep(2)
+        if p_hh != 0:
+            if p_hh == 1:
+                st.write(f"**1 hour**")
+            else:
+                st.write(f"**{p_hh} hours**")
+        with st.spinner("..."):
+            time.sleep(2)
+        if p_mm != 0:
+            if p_mm == 1:
+                st.write(f"**1 minute**")
+            else:
+                st.write(f"**{p_mm} minutes**")
+        with st.spinner("..."):
+            time.sleep(2)
+        if p_ss != 0:
+            if p_ss == 1:
+                st.write(f"**1 second**")
+            else:
+                st.write(f"**{p_ss} seconds**")
 
 
     
